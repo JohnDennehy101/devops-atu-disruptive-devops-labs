@@ -1,0 +1,21 @@
+name: Nmap Scanning
+
+on: [push]
+
+jobs:
+  nmap-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Install Nmap
+        run: sudo apt-get update && sudo apt-get install -y nmap
+
+      - name: Discovery Scan
+        run: nmap -sV -T4 ${{ secrets.TARGET_IP }} -oN scan_results.txt
+
+      - name: Execute Nmap results validation script
+        run: |
+          chmod +x ./labs/ethical_hacking/scripts/nmap_result_validation.sh
+          ./labs/ethical_hacking/scripts/nmap_result_validation.sh
