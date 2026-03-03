@@ -3,7 +3,12 @@ ALLOWED_PORTS="80|443"
 FORBIDDEN_PROD_SERVICES="Werkzeug|DEBUG"
 
 # Grep the results file to filter to only open ports
-grep "/open/" scan_results.txt | sed 's/, /\n/g' > open_ports_list.txt
+grep -iE '^[0-9]+/[a-zA-Z0-9]+[[:space:]]+open\b' scan_results.txt > open_ports_list.txt
+
+if [ ! -s open_ports_list.txt ]; then
+    echo "ERROR: No open ports found or nmap parsing failed"
+    exit 1
+fi
 
 echo "--- Current Open Ports ---"
 cat open_ports_list.txt
@@ -16,7 +21,7 @@ if grep -qiE "$FORBIDDEN_PROD_SERVICES" open_ports_list.txt; then
 fi
 
 # Check that only expected ports are exposed and open
-UNAUTHORISED=$(grep -vE "($ALLOWED)/open" open_ports_list.txt)
+UNAUTHORISED=$(grep -Ev "^($ALLOWED_PORTS)/" open_ports_list.txt)
 
 if [ ! -z "$UNAUTHORISED" ]; then
     echo "SECURITY ALERT: Unauthorised open ports found"
