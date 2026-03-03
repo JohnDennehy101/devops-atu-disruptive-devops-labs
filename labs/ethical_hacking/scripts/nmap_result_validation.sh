@@ -16,7 +16,7 @@ if grep -qiE "$FORBIDDEN_PROD_SERVICES" open_only.txt; then
 fi
 
 # Check that only expected ports are exposed and open
-UNAUTHORISED=$(grep -vE "($ALLOWED)/open" open_ports_list.txt)
+UNAUTHORISED=$(grep -vE "($ALLOWED)/open" open_only.txt)
 
 if [ ! -z "$UNAUTHORISED" ]; then
     echo "SECURITY ALERT: Unauthorised open ports found"
