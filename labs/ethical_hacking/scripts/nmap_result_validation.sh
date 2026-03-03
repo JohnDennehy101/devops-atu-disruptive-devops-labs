@@ -6,17 +6,17 @@ FORBIDDEN_PROD_SERVICES="Werkzeug|DEBUG"
 grep "/open/" scan_results.txt | sed 's/, /\n/g' > open_ports_list.txt
 
 echo "--- Current Open Ports ---"
-cat open_only.txt
+cat open_ports_list.txt
 echo "------------------------------"
 
 # Check that services blacklisted are not present - fail if so
-if grep -qiE "$FORBIDDEN_PROD_SERVICES" open_only.txt; then
+if grep -qiE "$FORBIDDEN_PROD_SERVICES" open_ports_list.txt; then
     echo "CRITICAL: Forbidden service detected (Match: $FORBIDDEN_PROD_SERVICES)"
     exit 1
 fi
 
 # Check that only expected ports are exposed and open
-UNAUTHORISED=$(grep -vE "($ALLOWED)/open" open_only.txt)
+UNAUTHORISED=$(grep -vE "($ALLOWED)/open" open_ports_list.txt)
 
 if [ ! -z "$UNAUTHORISED" ]; then
     echo "SECURITY ALERT: Unauthorised open ports found"
